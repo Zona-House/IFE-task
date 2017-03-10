@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		/*布局样式*/
+		.row {
+			width: 100%;
+			height: auto;
+			margin: 30px;
+			clear: both;
+		}
+		.col-1,
+		.col-6{
+			float: left;
+			/*clear: both;*/
+		}
+		.col-1 {
+			width: 8.33%;
+		}
+		.col-6 {
+			width: 50%;
+		}
+
+		/*元素样式*/
+		.input {
+			width: 80%;
+			height: 30px;
+		}
+
+		p {			
+			font-size: 12px;
+		}
+
+		.btn {
+			width: 80px;
+			height: 32px;
+			color: #fff;
+			background-color: #01e;
+			border:none;
+		}
+
+		/*动态样式*/
+		.error { 
+			outline-color: #e30;
+		}
+		.success {
+			outline-color: #03f;
+		}
+		.danger {
+			color: #e30;
+		}
+		.right {
+			color: #03f;
+		}
+	</style>
+</head>
+<body>
+	<div class="row">
+		<div class="col-1">
+			<label for="">名称</label>
+		</div>
+		<div class="col-6">
+			<input type="text" class="input">
+			<p>必填，长度为4~16个字符</p>
+		</div>		
+		<div class="col-1">
+			<button class="btn">验证</button>
+		</div>
+	</div>
+
+	
+	<script>
+		var input = document.getElementsByTagName("input")[0],
+		btn = document.getElementsByTagName("button")[0],
+		text = document.getElementsByTagName("p")[0],
+		len = 0, //用于记录字符长度
+		str,
+		unicode;
+	
+		//检测字符数
+		input.oninput = function(){
+			str = input.value
+			len = 0;
+			for (var i = 0; i < str.length; i++) {
+				unicode = str[i].charCodeAt() 
+				if (unicode >= 48 && unicode <= 122) {
+					len += 1;	//数字、英文字符占1
+				}else{
+					len += 2;	//其余字符占2
+				}
+			}
+			if (len < 4) {
+				text.innerHTML = "输入字数太少";
+				text.className = "danger";
+			}else if (len > 16) {
+				text.innerHTML = "输入字数太多";
+				text.className = "danger";
+			}else{
+				text.innerHTML = "必填，长度为4~16个字符"
+				text.className = "";
+			}
+		}
+
+		//检测是否输入正确
+		btn.onclick = function(){
+			if (!str) {
+				text.innerHTML = '姓名不能为空';
+				text.className = "danger";
+				input.classList.add("error")
+				input.focus()
+			}
+
+			if (len < 4 || len > 16) {
+				return
+			}else {
+				text.innerHTML = '姓名格式正确';
+				text.className = "right";
+				input.classList.add("success")
+				input.focus()
+			}
+		}
+	</script>
+</body>
+</html>

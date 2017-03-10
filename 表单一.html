@@ -75,10 +75,9 @@
 		var input = document.getElementsByTagName("input")[0],
 		btn = document.getElementsByTagName("button")[0],
 		text = document.getElementsByTagName("p")[0],
-		len = 0, //用于记录字符长度
+		len, //用于记录字符长度
 		str,
-		unicode;
-	
+		unicode; //存储unicode编码值	
 		//检测字符数
 		input.oninput = function(){
 			str = input.value

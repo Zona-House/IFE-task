@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		/*layout style*/
+		.row{
+			width: 50%;
+			margin: 10% auto;
+			text-align: center;
+		}
+		.col-6{
+			float: left;
+			width: 50%;
+			margin: 5% 0;			
+		}
+		select{
+			width: 70%;
+		}
+	</style>
+</head>
+<body>
+	<form action="">
+		<div class="row">
+			<div class="col-6">
+				<input type="radio" value="student" id="stu" name="id" checked>
+				<label for="stu">在校生</label>
+			</div>
+			<div class="col-6">
+				<input type="radio" value="human" name="id" id="hum">
+				<label for="hum">非在校生</label>
+			</div>
+		</div>
+		<div class="row">
+			<div id="student-text">
+				<div class="col-6">
+					<label for="">学校</label>
+					<select name="city" id="city">
+						<option value="">北京</option>
+						<option value="">上海</option>
+					</select>
+				</div>
+				<div class="col-6">
+					<select name="school" id="school">
+						<option>北京一中</option>
+						<option>北京二中</option>
+						<option>北京三中</option>
+						<option>北京四中</option>
+					</select>
+				</div>
+			</div>
+			<div id="human-text" style="display: none">
+				<label for="">就业单位</label>
+				<input type="text">
+			</div>
+		</div>
+	</form>
+
+	<script>
+		var student = document.getElementById('stu'),
+		stuSelect = document.getElementById('student-text'),
+		human = document.getElementById('hum'),
+		humText = document.getElementById('human-text'),
+		city = document.getElementById('city'),
+		school = document.getElementById('school')
+
+		// 选项切换
+		student.onclick = function(){
+			stuSelect.style.display = "block";
+			humText.style.display = "none";
+		}
+
+		human.onclick = function(){
+			stuSelect.style.display = "none";
+			humText.style.display = "block";
+		}
+
+		// 联动菜单
+		// 准备数据
+		var schoolData = [
+			["北京一中","北京二中","北京三中","北京四中",],
+			["上海一中","上海二中","上海三中","上海四中",],
+		]
+		//绑定事件
+		for (var i = 0; i < city.length; i++) {
+			city[i].value = i;
+			city.onchange = function(){
+				showList(this.value)
+			}
+		}
+		//渲染方法
+		function showList(val){			
+			var html = ''; 
+			for (var i = 0; i < schoolData[val].length; i++) {
+				html += '<option>'+ schoolData[val][i] +'</option>';
+			}
+			school.innerHTML = html
+		}
+	</script>
+</body>
+</html>

@@ -152,6 +152,8 @@
 						case "GO" :
 							Block.move();
 							break
+						default :
+							alert("您输入的指令不合法，请输入TUN LEF\TUN RIG\TUN BAC\GO")
 					}
 					// 判断结束，修改参数后再调用blocklayer,重新渲染，形成移动、旋转等效果
 					Block.addStyle();

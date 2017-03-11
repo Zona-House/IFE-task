@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		/*layout*/
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.wrap {
+			text-align: center;		
+		}
+		
+		table {
+			position: relative;
+			margin: 1% auto;
+		}
+
+		/*block*/
+		.body {
+			position: absolute;
+			top: 0;
+			background-color: #00f;
+			transition: all 0.5s
+		}
+		.head {
+			background-color: #f00;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<table cellspacing="0"><tbody id="map"></tbody></table>
+		<input type="text" id="order">
+		<button>执行</button>
+	</div>
+
+	<script>
+		(function(){
+
+			var map = document.getElementById('map'),
+			WIDTH = 50 	//方格和方块大小
+
+			// 方格地图层
+			function MapLayer() {
+				this.init()
+			}
+			
+			MapLayer.prototype.init = function() {
+				var tr = "<tr></tr>",
+				td = "<td></td>"
+				
+				for (var i = 0; i < 10; i++) {
+					map.innerHTML += tr	
+					for (var j = 0; j < 10; j++) {
+						map.children[i].innerHTML += td
+					}
+				}
+				td = document.querySelectorAll("td")
+
+				td.forEach(function(item){
+					item.style.width = WIDTH + "px" ;
+					item.style.height = WIDTH + "px";
+					item.style.border = "1px solid #ccc"
+				})
+			};
+//  ************************************分割线*****************************************//
+			// 方块层
+			function BlockLayer(){
+				this.col = 6;
+				this.row = 6;
+				this.oneCell = WIDTH+2;
+				this.deg = 0;
+
+				this.init();
+			}
+
+			BlockLayer.prototype.init = function() {
+				this.block = document.createElement("div")
+				this.head = document.createElement("div")
+				this.block.setAttribute("class","body")
+				this.head.setAttribute("class","head")
+
+				this.block.appendChild(this.head)
+				map.appendChild(this.block)
+
+				this.addStyle()
+			};
+
+			BlockLayer.prototype.addStyle = function() {
+				this.block.style.width = this.block.style.height = this.head.style.width = this.oneCell + "px";
+				this.head.style.height = WIDTH/3 + "px";
+				// 通过行列数的 row / col 倍， 形成移动效果
+				this.block.style.top = this.row * this.oneCell + "px"	
+				this.block.style.left = this.col * this.oneCell + "px"
+				this.block.style.transform = "rotate(" + this.deg + "deg)"
+			};
+
+			BlockLayer.prototype.move = function() {	//方块移动的算法
+				var deg = this.deg%360
+				// 判断方块的方向
+				if (deg == 0) {
+					this.row -= 1;
+				}else if (deg == 90 || deg == -270) { //右
+					this.col += 1;
+				}else if (deg == 180) {
+					this.row += 1;
+				}else if (deg == 270 || deg == -90) {//左
+					this.col -= 1
+				}
+
+				// 判断方块是否会出界
+				this.row < 0 ? this.row = 0 : this.row;	//是否触及上边界
+				this.row >= 9 ? this.row = 9 : this.row;	//是否触及下边界
+				this.col < 0 ? this.col = 0 : this.col;	//是否触及左边界
+				this.col >= 9 ? this.col = 9 : this.col;	//是否触及右边界
+			};
+//  ************************************分割线*****************************************//
+			// 指令层
+			function Order() {
+				this.btn = document.querySelector("button");
+				this.order = "";
+
+				this.implement()
+			}
+
+			Order.prototype.implement = function() {
+				var self = this		//绑定this,this -> Order			
+				this.btn.onclick = function() {
+					//此时this -> btn ,所以用 self 访问 Order.order
+					self.order = document.querySelector("#order").value;
+					switch (self.order) {
+						case "TUN LEF":
+							if (Math.abs(Block.deg%360) == 180) {	//判断方块是否朝下
+								Block.deg += 90
+							}else{
+								Block.deg -= 90
+							}
+							break
+						case "TUN RIG":
+							if (Math.abs(Block.deg%360) == 180) {	//判断方块是否朝下
+								Block.deg -= 90
+							}else{
+								Block.deg += 90
+							}
+							break
+						case "TUN BAC":
+							Block.deg += 180
+							break
+						case "GO" :
+							Block.move();
+							break
+					}
+					// 判断结束，修改参数后再调用blocklayer,重新渲染，形成移动、旋转等效果
+					Block.addStyle();
+				}
+			};
+
+//  ************************************分割线*****************************************//
+			new MapLayer();
+			var Block = new BlockLayer();
+			new Order();
+		})(window)
+	</script>
+</body>
+</html>

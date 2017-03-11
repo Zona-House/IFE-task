@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		/*layout*/
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.wrap {
+			text-align: center;		
+		}
+		
+		table {
+			position: relative;
+			margin: 1% auto;
+		}
+
+		/*block*/
+		.body {
+			position: absolute;
+			top: 0;
+			background-color: #00f;
+			transition: all 0.5s
+		}
+		.head {
+			background-color: #f00;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<table cellspacing="0"><tbody id="map"></tbody></table>
+		<input type="text" id="order">
+		<button>执行</button>
+	</div>
+
+	<script>
+		(function(){
+
+			var map = document.getElementById('map'),
+			WIDTH = 50 	//方格和方块大小
+
+			// 方格地图层
+			function MapLayer() {
+				this.init()
+			}
+			
+			MapLayer.prototype.init = function() {
+				var tr = "<tr></tr>",
+				td = "<td></td>"
+				
+				for (var i = 0; i < 10; i++) {
+					map.innerHTML += tr	
+					for (var j = 0; j < 10; j++) {
+						map.children[i].innerHTML += td
+					}
+				}
+				td = document.querySelectorAll("td")
+
+				td.forEach(function(item){
+					item.style.width = WIDTH + "px" ;
+					item.style.height = WIDTH + "px";
+					item.style.border = "1px solid #ccc"
+				})
+			};
+//  ************************************分割线*****************************************//
+			// 方块层
+			function BlockLayer(){
+				this.col = 6;
+				this.row = 6;
+				this.oneCell = WIDTH+2;
+				this.deg = 0;	//需要旋转的角度
+				this.oldDeg = 0;	//记录方块的方向
+
+				this.init();
+			}
+
+			BlockLayer.prototype.init = function() {
+				this.block = document.createElement("div");
+				this.head = document.createElement("div");
+				this.block.setAttribute("class","body");
+				this.head.setAttribute("class","head");
+
+				this.block.appendChild(this.head);
+				map.appendChild(this.block);
+				this.block.style.width = this.block.style.height = this.head.style.width = this.oneCell + "px";
+				this.head.style.height = WIDTH/3 + "px";
+				this.addStyle()
+			};
+
+			BlockLayer.prototype.addStyle = function() {		
+				// 通过行列数的 row / col 倍， 形成移动效果
+				this.block.style.top = this.row * this.oneCell + "px";
+				this.block.style.left = this.col * this.oneCell + "px";
+			};
+
+			BlockLayer.prototype.move = function() {	//方块移动的算法
+				switch (Order.order) {
+					case "TRA LEF":
+						this.col -= 1;
+						break
+					case "TRA TOP":
+						this.row -= 1;
+						break
+					case "TRA RIG":
+						this.col += 1;
+						break
+					case "TRA BOT":
+						this.row += 1;
+						break
+					case "MOV LEF":
+						this.col -= 1;
+						this.deg = -90;
+						break
+					case "MOV TOP":
+						this.row -= 1;
+						this.deg = 0;
+						break
+					case "MOV RIG":
+						this.col += 1;
+						this.deg = 90;
+						break
+					case "MOV BOT":
+						this.row += 1;
+						this.deg = 180;
+						break
+					default:
+						alert("您输入的指令有误");	
+				}
+
+				// 判断方块是否会出界
+				this.row < 0 ? this.row = 0 : this.row;	//是否触及上边界
+				this.row >= 9 ? this.row = 9 : this.row;	//是否触及下边界
+				this.col < 0 ? this.col = 0 : this.col;	//是否触及左边界
+				this.col >= 9 ? this.col = 9 : this.col;	//是否触及右边界
+
+				if (this.oldDeg == this.deg) {	//方向不变，直接移动
+					Block.addStyle();
+				}else{		//方向改变，则先旋转后移动
+					this.oldDeg = this.deg;
+					this.block.style.transform = "rotate("+ this.deg +"deg)";
+					setTimeout(function(){
+						Block.addStyle();
+					},500)
+				}
+				
+			};
+//  ************************************分割线*****************************************//
+			// 指令层
+			function OrderLayer() {
+				this.btn = document.querySelector("button");
+				this.order = "";
+				this.implement();
+			}
+
+			OrderLayer.prototype.implement = function() {
+				var self = this		//绑定this,this -> Order
+				this.btn.onclick = function() {
+					self.order = document.querySelector("#order").value;
+					Block.move()
+				}
+			};
+
+//  ************************************分割线*****************************************//
+			new MapLayer();
+			var Block = new BlockLayer();
+			var Order = new OrderLayer();
+		})(window)
+	</script>
+</body>
+</html>
